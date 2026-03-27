@@ -37,11 +37,11 @@ Docker images often become **large and inefficient** due to:
 
 This tool:
 
-✔ Analyzes Docker images
-✔ Breaks down layers
-✔ Detects inefficiencies
-✔ Suggests optimizations
-✔ Visualizes improvements
+ Analyzes Docker images
+ Breaks down layers
+ Detects inefficiencies
+ Suggests optimizations
+ Visualizes improvements
 
 ---
 
