@@ -1,0 +1,14 @@
+version: '3'
+
+services:
+  analyzer:
+    build: ./analyzer_tool
+    ports:
+      - "8000:8000"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+
+  dashboard:
+    build: ./dashboard
+    ports:
+      - "3001:80"

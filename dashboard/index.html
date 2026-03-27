@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Docker Analyzer</title>
+
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body>
+
+<div class="container">
+
+  <div class="header">
+    <h1 class="title">
+      🐳 Docker Image Analyzer
+    </h1>
+
+    <button id="themeToggle" onclick="toggleTheme()" class="theme-btn">🌙</button>
+  </div>
+
+  <p class="subtitle">Optimize container performance and reduce image size</p>
+
+  <!-- LINTER -->
+  <div class="card">
+    <h3>Dockerfile Linter</h3>
+    <textarea id="dockerfile" placeholder="Paste Dockerfile..." oninput="lint()"></textarea>
+    <pre id="lintOutput"></pre>
+  </div>
+
+  <!-- ANALYZER -->
+  <div class="card">
+    <h3>Image Analyzer</h3>
+
+    <input id="image" placeholder="go-app:v1">
+
+    <div class="btn-group">
+      <button onclick="analyze()">Analyze</button>
+      <button onclick="compareAll()">Compare All</button>
+      <button onclick="resetData()">Reset</button>
+    </div>
+
+    <input id="bandwidth" placeholder="Bandwidth (MB/s)">
+  </div>
+
+  <!-- OUTPUT -->
+  <div class="card">
+    <h3>Output</h3>
+    <pre id="output"></pre>
+  </div>
+
+  <!-- CHART -->
+  <div class="card">
+    <h3>Comparison</h3>
+    <div class="card">
+  <h3>AI Optimization Suggestions</h3>
+  <ul id="aiSuggestions"></ul>
+</div>
+    <p id="reductionText"></p>
+    <p id="bestVersion"></p>
+    <div id="chartContainer"></div>
+  </div>
+
+  <!-- LAYERS -->
+  <div class="card">
+    <h3>Layer Breakdown</h3>
+    <div id="layerCards"></div>
+  </div>
+
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
