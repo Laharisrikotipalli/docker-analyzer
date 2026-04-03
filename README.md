@@ -110,7 +110,6 @@ Detects:
 ---
 
 ##  System Architecture
-optimization
 
 ### Data Flow
 ```
