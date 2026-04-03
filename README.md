@@ -110,6 +110,26 @@ Detects:
 ---
 
 ##  System Architecture
+optimization
+
+### Data Flow
+```
+User (Browser)
+      ↓
+Frontend (HTML, JS Dashboard)
+      ↓
+FastAPI Backend (/api/analyze, /api/lint)
+      ↓
+Docker SDK (docker.from_env)
+      ↓
+Docker Engine (Images & Layers)
+      ↓
+Processing Layer (Analysis + AI Suggestions)
+      ↓
+JSON Response
+      ↓
+Frontend (Charts + Layer UI + Suggestions)
+```
 
 ### Components:
 
