@@ -1,13 +1,35 @@
 version: "3.8"
+
 services:
   analyzer:
     build: ./analyzer_tool
+    container_name: docker-analyzer-api
     ports:
       - "8000:8000"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
+    restart: unless-stopped
+
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/docs"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
 
   dashboard:
     build: ./dashboard
+    container_name: docker-analyzer-dashboard
     ports:
       - "3000:80"
+    depends_on:
+      analyzer:
+        condition: service_healthy
+    restart: unless-stopped
+
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 5s
