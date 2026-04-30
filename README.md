@@ -4,28 +4,54 @@ A full-stack DevOps tool that analyzes Docker images, detects inefficiencies, an
 
 ---
 
-##  Project Overview
+## 📌 Project Overview
 
-The **Docker Image Optimization Analyzer** is designed to help developers:
+The **Docker Image Optimization Analyzer** helps developers:
 
-* Understand how Docker images are built
+* Understand Docker image structure
 * Identify large and inefficient layers
 * Compare multiple Dockerfile versions (V1 → V4)
 * Optimize image size using best practices
-* Visualize improvements using charts
+* Visualize improvements through charts
 
 ---
 
-##  Problem Statement
+## 🏗️ Architecture
+
+<p align="center">
+  <img src="docs/architecture.png" alt="Architecture Diagram" width="850"/>
+</p>
+
+### 🔹 Workflow
+
+1. User enters image name in Dashboard
+2. Frontend sends request → FastAPI backend
+3. Backend uses Docker SDK to inspect image
+4. Docker Engine returns image metadata
+5. Backend processes:
+
+   * Layers
+   * Sizes
+   * Optimization insights
+6. Frontend displays:
+
+   * Charts
+   * Metrics
+   * Layer breakdown
+   * Suggestions
+
+---
+
+## ❗ Problem Statement
 
 Docker images often become **large and inefficient** due to:
 
-* Large base images (e.g., `golang`, `node`)
-* Unoptimized Dockerfiles
+* Heavy base images (golang, node)
+* Poor Dockerfile practices
 * Too many layers
-* Poor caching strategies
+* No cleanup or optimization
 
- This leads to:
+### 🔻 Impact
 
 * Slow deployments
 * High storage usage
@@ -33,34 +59,31 @@ Docker images often become **large and inefficient** due to:
 
 ---
 
-##  Solution
+## ✅ Solution
 
-This tool:
+This tool provides:
 
-✔ Analyzes Docker images
-✔ Breaks down layers
-✔ Detects inefficiencies
-✔ Suggests optimizations
-✔ Visualizes improvements
-
----
-
-##  Features
-
-### Image Analysis
-
-* Fetches image metadata using Docker SDK
-* Calculates:
-
-  * Total size
-  * Number of layers
-* Identifies largest layers
+✔ Image analysis
+✔ Layer breakdown
+✔ Optimization suggestions
+✔ Version comparison
+✔ Visualization dashboard
 
 ---
 
-### Comparison Dashboard
+## 🚀 Features
 
-* Compare multiple image versions (V1 → V4)
+### 🔍 Image Analysis
+
+* Total image size
+* Number of layers
+* Largest layers
+
+---
+
+### 📊 Comparison Dashboard
+
+* Compare multiple versions (V1 → V4)
 * Bar chart visualization
 * Displays:
 
@@ -69,103 +92,69 @@ This tool:
 
 ---
 
-### Layer Breakdown
+### 📦 Layer Breakdown
 
-* Shows only meaningful layers:
+* Shows meaningful layers only:
 
   * RUN
   * COPY
-  * CMD
   * WORKDIR
+  * CMD
 * Filters base image noise
 * Displays size per layer
 
 ---
 
-### AI Optimization Suggestions
+### ⚡ AI Optimization Suggestions
 
-* Rule-based intelligent system
-* Detects:
+Rule-based intelligent system:
 
-  * Large base image usage
-  * Too many layers
-  * Inefficient COPY usage
-  * Large dependency layers
-* Suggests:
+Detects:
 
-  * Multi-stage builds
-  * Alpine / Distroless images
-  * Layer optimization
+* Large base images
+* Too many layers
+* Inefficient COPY usage
+
+Suggests:
+
+* Multi-stage builds
+* Alpine / Distroless images
+* Layer optimization
 
 ---
 
-### Dockerfile Linter
+### 🧪 Dockerfile Linter
 
 Detects:
 
 * Use of `ADD` instead of `COPY`
+* Missing cleanup
 * Inefficient commands
-* Bad Docker practices
 
 ---
 
-##  System Architecture
+### 🌗 Theme Support
 
-### Components:
-
-#### 1. Frontend (Dashboard)
-
-* HTML, CSS, JavaScript
-* Displays analysis results
-* Sends API requests
+* Light / Dark mode toggle
 
 ---
 
-#### 2. Backend (FastAPI)
+## 🐳 Optimization Results
 
-* Handles API endpoints:
+| Version | Size    |
+| ------- | ------- |
+| V1      | 1102 MB |
+| V2      | ~94 MB  |
+| V3      | ~13 MB  |
+| V4      | ~11 MB  |
 
-  * `/api/analyze`
-  * `/api/lint`
-* Processes Docker image data
+### 📉 Final Reduction
 
----
-
-#### 3. Docker Engine
-
-* Provides image metadata
-* Returns layer history
+**~99% image size reduction**
 
 ---
 
-#### 4. Processing Layer
-
-* Filters layers
-* Computes size metrics
-* Generates suggestions
-
----
-
-### 6. Workflow
-
-1. User enters image name (e.g., `go-app:v1`)
-2. Frontend sends request → FastAPI
-3. FastAPI uses Docker SDK
-4. Docker returns image data
-5. Backend processes:
-
-   * Layers
-   * Sizes
-   * Suggestions
-6. Frontend displays:
-
-   * Chart
-   * Layer breakdown
-   * AI suggestions
-
----
-
-##  Project Structure
+## 📁 Project Structure
 
 ```
 docker-analyzer/
@@ -185,25 +174,18 @@ docker-analyzer/
 │   ├── node-app/
 │   ├── python-app/
 │
+├── docs/
+│   └── architecture.png
+│
 ├── docker-compose.yml
 ├── README.md
 ```
 
 ---
 
-##  Tech Stack
+## ⚙️ Setup & Run
 
-* Frontend: HTML, CSS, JavaScript, Chart.js
-* Backend: FastAPI (Python)
-* DevOps: Docker, Docker SDK
-* Visualization: Chart.js
-* AI: Rule-based recommendation system
-
----
-
-##  Step-by-Step Setup
-
-###  Step 1: Clone Project
+### 1️⃣ Clone Repository
 
 ```bash
 git clone <your-repo-url>
@@ -212,54 +194,7 @@ cd docker-analyzer
 
 ---
 
-###  Step 2: Start Backend
-
-```bash
-cd analyzer_tool
-pip install -r requirements.txt
-uvicorn main:app --reload
-```
-
-Backend runs on:
-
-```
-http://localhost:8000
-```
-
----
-
-###  Step 3: Open Frontend
-
-Open:
-
-```
-dashboard/index.html
-```
-
----
-
-### Step 4: Build Sample Images
-
-Example:
-
-```bash
-docker build -f apps/go-app/Dockerfile.v1 -t go-app:v1 ./apps/go-app
-docker build -f apps/go-app/Dockerfile.v2 -t go-app:v2 ./apps/go-app
-docker build -f apps/go-app/Dockerfile.v3 -t go-app:v3 ./apps/go-app
-docker build -f apps/go-app/Dockerfile.v4 -t go-app:v4 ./apps/go-app
-```
-
----
-
-### Step 5: Analyze Images
-
-* Enter image name in UI
-* Click **Analyze**
-* Click **Compare All**
-
----
-
-##   Docker Deployment 
+### 2️⃣ Run Using Docker (Recommended)
 
 ```bash
 docker-compose up --build
@@ -267,20 +202,37 @@ docker-compose up --build
 
 ---
 
-##  Example Output
+## 🌐 Access
 
-| Version | Size    |
-| ------- | ------- |
-| V1      | 1102 MB |
-| V2      | ~94 MB  |
-| V3      | ~13 MB  |
-| V4      | ~11 MB  |
-
- Reduction: **~99%**
+* Dashboard → http://localhost:3000
+* API Docs → http://localhost:8000/docs
 
 ---
 
-##  Optimization Techniques Used
+## 🧪 Usage
+
+1. Enter image name (e.g., `go-app:v1`)
+2. Click **Analyze**
+3. Click **Compare All**
+4. View:
+
+   * Chart comparison
+   * Reduction %
+   * Best version
+   * Layer breakdown
+
+---
+
+## 🛠️ Tech Stack
+
+* Backend → FastAPI, Docker SDK (Python)
+* Frontend → HTML, CSS, JavaScript, Chart.js
+* DevOps → Docker, Docker Compose
+* AI → Rule-based optimization engine
+
+---
+
+## 🔧 Optimization Techniques Used
 
 * Multi-stage builds
 * Distroless base images
@@ -290,7 +242,7 @@ docker-compose up --build
 
 ---
 
-##  Use Cases
+## 🎯 Use Cases
 
 * DevOps optimization
 * CI/CD pipelines
@@ -299,34 +251,34 @@ docker-compose up --build
 
 ---
 
-##  Future Enhancements
+## 🚀 Future Enhancements
 
 * LLM-based AI (OpenAI / Gemini)
-* Security scanning
+* Security vulnerability scanning
 * Kubernetes integration
 * Pull time simulation
-* Advanced visualization (layer heatmap)
+* Layer heatmap visualization
 
 ---
 
-##  Resume Description
+## 💼 Resume Description
 
-> Built a full-stack Docker image optimization tool using FastAPI and JavaScript dashboard. Implemented layer analysis, visualization, and intelligent recommendations, achieving up to 99% image size reduction using multi-stage builds and optimization techniques.
+> Built a full-stack Docker image optimization tool using FastAPI and a JavaScript dashboard. Implemented layer analysis, visualization, and intelligent recommendations, achieving up to 99% image size reduction using multi-stage builds and optimization techniques.
 
 ---
 
-##  Author
+## 👨‍💻 Author
 
 **Lahari Sri**
-BTech CSE | DevOps & Cloud Enthusiast
+B.Tech CSE | DevOps & Cloud Enthusiast
 
 ---
 
-## 17. Conclusion
+## 🏁 Conclusion
 
 This project demonstrates:
 
 * Strong DevOps fundamentals
-* Docker optimization techniques
+* Docker optimization expertise
 * Full-stack development skills
-* System design thinking
+* System design understanding

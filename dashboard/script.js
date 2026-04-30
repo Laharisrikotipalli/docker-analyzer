@@ -5,8 +5,6 @@ async function analyze() {
   let name = document.getElementById("image").value.trim();
   if (!name) return alert("Enter image name");
 
-  setOutput("Analyzing...");
-
   let res = await fetch("http://localhost:8000/api/analyze", {
     method: "POST",
     headers: {"Content-Type":"application/json"},
@@ -15,19 +13,13 @@ async function analyze() {
 
   let data = await res.json();
 
-  if (data.error || data.detail) {
-    setOutput(data.error || data.detail);
-    return;
-  }
-
-  setOutput(JSON.stringify(data, null, 2));
-
   imageData[name] = data.total_size_mb;
 
-  updateChart();
+  document.getElementById("output").innerText =
+    JSON.stringify(data, null, 2);
+
+  updateAllUI();
   showLayers(data.layers);
-  calculateReduction();
-  highlightBest();
   generateSuggestions(data);
 }
 
@@ -43,16 +35,137 @@ async function compareAll() {
       });
 
       let data = await res.json();
-      if (!data.error) imageData[v] = data.total_size_mb;
-
+      imageData[v] = data.total_size_mb;
     } catch {}
   }
 
+  document.getElementById("output").innerText = "Comparison completed";
+  updateAllUI();
+}
+
+function updateAllUI() {
   updateChart();
+  updateMetrics();
   calculateReduction();
   highlightBest();
+}
 
-  setOutput("Comparison completed");
+function updateMetrics() {
+  let count = Object.keys(imageData).length;
+  document.getElementById("totalImages").innerText = count;
+}
+
+function updateChart() {
+  const canvas = document.getElementById("sizeChart");
+  if (!canvas) return;
+
+  const ctx = canvas.getContext("2d");
+
+  if (chart) chart.destroy();
+
+  chart = new Chart(ctx, {
+    type: "bar",
+    data: {
+      labels: Object.keys(imageData),
+      datasets: [{
+        label: "Size (MB)",
+        data: Object.values(imageData),
+        backgroundColor: "#3b82f6"
+      }]
+    },
+    options: {
+      responsive: true,
+      scales: {
+        y: { beginAtZero: true }
+      }
+    }
+  });
+}
+
+function calculateReduction() {
+  let vals = Object.values(imageData);
+  let text = document.getElementById("reductionText");
+
+  if (vals.length < 2) {
+    text.innerText = "Add more images to compare";
+
+    let bar = document.getElementById("progressFill");
+    if (bar) bar.style.width = "0%";
+
+    return;
+  }
+
+  let max = Math.max(...vals);
+  let min = Math.min(...vals);
+
+  let r = ((max - min) / max * 100).toFixed(2);
+
+  text.innerText = r + "%";
+
+  let bar = document.getElementById("progressFill");
+  if (bar) bar.style.width = r + "%";
+}
+
+function highlightBest() {
+  let entries = Object.entries(imageData);
+
+  if (entries.length === 0) {
+    document.getElementById("bestVersion").innerText = "-";
+    return;
+  }
+
+  let best = entries.reduce((a,b)=> a[1]<b[1]?a:b);
+
+  document.getElementById("bestVersion").innerText =
+    best[0] + " (" + best[1] + " MB)";
+}
+
+function resetData() {
+  imageData = {};
+
+  if (chart) chart.destroy();
+
+  document.getElementById("output").innerText = "";
+  document.getElementById("layerCards").innerHTML = "";
+  document.getElementById("reductionText").innerText = "-";
+  document.getElementById("bestVersion").innerText = "-";
+  document.getElementById("totalImages").innerText = "0";
+
+  let bar = document.getElementById("progressFill");
+  if (bar) bar.style.width = "0%";
+}
+
+function showLayers(layers) {
+  let container = document.getElementById("layerCards");
+  container.innerHTML = "";
+
+  layers.slice(0,8).forEach(l=>{
+    let size = (l.Size/1024/1024).toFixed(2);
+
+    let cmd = (l.CreatedBy || "")
+      .replace("/bin/sh -c ","")
+      .replace("# buildkit","");
+
+    if (cmd.length > 80)
+      cmd = cmd.substring(0,80) + "...";
+
+    container.innerHTML += `
+      <div class="layer-card">
+        <div class="layer-command">${cmd}</div>
+        <div class="layer-size">${size} MB</div>
+      </div>`;
+  });
+}
+
+function generateSuggestions(data) {
+  let list = document.getElementById("aiSuggestions");
+  list.innerHTML = "";
+
+  if (data.total_size_mb > 200)
+    list.innerHTML += "<li>Use smaller base image</li>";
+
+  if (data.num_layers > 10)
+    list.innerHTML += "<li>Reduce layers</li>";
 }
 
 async function lint() {
@@ -70,178 +183,10 @@ async function lint() {
     JSON.stringify(data,null,2);
 }
 
-function updateChart() {
-  let labels = Object.keys(imageData);
-  let values = Object.values(imageData);
-
-  document.getElementById("chartContainer").innerHTML =
-    '<canvas id="sizeChart"></canvas>';
-
-  const ctx = document.getElementById("sizeChart");
-
-  if (chart) chart.destroy();
-
-  chart = new Chart(ctx, {
-    type:'bar',
-    data:{
-      labels:labels,
-      datasets:[{
-        label: "Image Size (MB)",
-        data:values,
-        backgroundColor:['#ef4444','#f59e0b','#10b981','#3b82f6']
-      }]
-    }
-  });
-}
-
-function calculateReduction() {
-  let vals = Object.values(imageData);
-  if (vals.length < 2) return;
-
-  let max = Math.max(...vals);
-  let min = Math.min(...vals);
-
-  let r = ((max-min)/max*100).toFixed(2);
-
-  document.getElementById("reductionText").innerText =
-    "Size reduced by " + r + "%";
-}
-
-function highlightBest() {
-  let entries = Object.entries(imageData);
-  if (!entries.length) return;
-
-  let best = entries.reduce((a,b)=> a[1]<b[1]?a:b);
-
-  document.getElementById("bestVersion").innerText =
-    "Best: " + best[0] + " (" + best[1] + " MB)";
-}
-
-/* =========================
-   CLEAN LAYER FILTER
-========================= */
-function showLayers(layers) {
-  let container = document.getElementById("layerCards");
-  container.innerHTML = "";
-
-  layers
-    .filter(l => {
-      let cmd = l.CreatedBy?.toLowerCase() || "";
-
-      return (
-        (cmd.includes("run") ||
-         cmd.includes("copy") ||
-         cmd.includes("cmd") ||
-         cmd.includes("workdir") ||
-         cmd.includes("expose")) &&
-
-        !cmd.includes("env") &&
-        !cmd.includes("mkdir") &&
-        !cmd.includes("#(nop)") &&
-        !cmd.includes("set -eux")
-      );
-    })
-    .slice(0, 10)
-    .forEach(l => {
-
-      let id = l.Id !== "<missing>" ? l.Id.substring(7,15) : "";
-      let size = (l.Size/1024/1024).toFixed(2);
-
-      let cmd = l.CreatedBy
-        .replace("/bin/sh -c ", "")
-        .replace("# buildkit","")
-        .trim();
-
-      // trim long commands
-      if (cmd.length > 80) {
-        cmd = cmd.substring(0,80) + "...";
-      }
-
-      container.innerHTML += `
-        <div class="layer-card">
-          <div>
-            <div class="layer-id">${id}</div>
-            <div class="layer-command">${cmd}</div>
-          </div>
-          <div class="layer-size">${size} MB</div>
-        </div>
-      `;
-    });
-}
-
-/* =========================
-   CLEAN AI SUGGESTIONS
-========================= */
-function generateSuggestions(data) {
-  let list = document.getElementById("aiSuggestions");
-  list.innerHTML = "";
-
-  let suggestions = new Set();
-
-  if (data.total_size_mb > 200) {
-    suggestions.add("Use smaller base image (Alpine or Distroless)");
-  }
-
-  if (data.num_layers > 10) {
-    suggestions.add("Reduce layers using multi-stage builds");
-  }
-
-  let copyLayer = data.layers.find(l =>
-    l.CreatedBy && l.CreatedBy.includes("COPY .")
-  );
-  if (copyLayer) {
-    suggestions.add("Avoid copying entire project early to improve caching");
-  }
-
-  let bigLayer = data.layers.find(l => l.Size > 50 * 1024 * 1024);
-  if (bigLayer) {
-    suggestions.add("Large dependency layer detected — optimize dependencies");
-  }
-
-  if (suggestions.size === 0) {
-    suggestions.add("Image is well optimized");
-  }
-
-  suggestions.forEach(s => {
-    list.innerHTML += `<li>${s}</li>`;
-  });
-}
-
-/* ========================= */
-
 function toggleTheme() {
-  const body = document.body;
-  const btn = document.getElementById("themeToggle");
+  document.body.classList.toggle("light");
 
-  body.classList.toggle("light");
-
-  if (body.classList.contains("light")) {
-    btn.innerText = "🌞";
-    localStorage.setItem("theme","light");
-  } else {
-    btn.innerText = "🌙";
-    localStorage.setItem("theme","dark");
-  }
-}
-
-window.onload = function () {
-  let theme = localStorage.getItem("theme");
-
-  if (theme === "light") {
-    document.body.classList.add("light");
-    document.getElementById("themeToggle").innerText = "🌞";
-  }
-};
-
-function resetData() {
-  imageData = {};
-  document.getElementById("chartContainer").innerHTML = "";
-  document.getElementById("layerCards").innerHTML = "";
-  document.getElementById("reductionText").innerText = "";
-  document.getElementById("bestVersion").innerText = "";
-  document.getElementById("aiSuggestions").innerHTML = "";
-}
-
-function setOutput(text) {
-  document.getElementById("output").innerText = text;
+  let btn = document.getElementById("themeToggle");
+  btn.innerText =
+    document.body.classList.contains("light") ? "🌞" : "🌙";
 }

@@ -13,23 +13,12 @@
 <div class="container">
 
   <div class="header">
-    <h1 class="title">
-      🐳 Docker Image Analyzer
-    </h1>
-
+    <h1 class="title">Docker Image Analyzer</h1>
     <button id="themeToggle" onclick="toggleTheme()" class="theme-btn">🌙</button>
   </div>
 
   <p class="subtitle">Optimize container performance and reduce image size</p>
 
-  <!-- LINTER -->
-  <div class="card">
-    <h3>Dockerfile Linter</h3>
-    <textarea id="dockerfile" placeholder="Paste Dockerfile..." oninput="lint()"></textarea>
-    <pre id="lintOutput"></pre>
-  </div>
-
-  <!-- ANALYZER -->
   <div class="card">
     <h3>Image Analyzer</h3>
 
@@ -44,28 +33,58 @@
     <input id="bandwidth" placeholder="Bandwidth (MB/s)">
   </div>
 
-  <!-- OUTPUT -->
-  <div class="card">
-    <h3>Output</h3>
-    <pre id="output"></pre>
+  <!-- METRICS -->
+  <div class="metrics">
+    <div class="metric-card">
+      <span>Total Images</span>
+      <h2 id="totalImages">0</h2>
+    </div>
+
+    <div class="metric-card">
+      <span>Reduction</span>
+      <h2 id="reductionText">-</h2>
+    </div>
+
+    <div class="metric-card">
+      <span>Best Version</span>
+      <h2 id="bestVersion">-</h2>
+    </div>
+  </div>
+
+  <!-- PROGRESS BAR -->
+  <div class="progress-bar">
+    <div id="progressFill"></div>
   </div>
 
   <!-- CHART -->
   <div class="card">
-    <h3>Comparison</h3>
-    <div class="card">
-  <h3>AI Optimization Suggestions</h3>
-  <ul id="aiSuggestions"></ul>
-</div>
-    <p id="reductionText"></p>
-    <p id="bestVersion"></p>
-    <div id="chartContainer"></div>
+    <h3>Comparison Chart</h3>
+    <canvas id="sizeChart"></canvas>
+  </div>
+
+  <!-- AI -->
+  <div class="card">
+    <h3>AI Optimization Suggestions</h3>
+    <ul id="aiSuggestions"></ul>
   </div>
 
   <!-- LAYERS -->
   <div class="card">
     <h3>Layer Breakdown</h3>
     <div id="layerCards"></div>
+  </div>
+
+  <!-- LINTER -->
+  <div class="card">
+    <h3>Dockerfile Linter</h3>
+    <textarea id="dockerfile" placeholder="Paste Dockerfile..." oninput="lint()"></textarea>
+    <pre id="lintOutput"></pre>
+  </div>
+
+  <!-- OUTPUT -->
+  <div class="card">
+    <h3>Output</h3>
+    <pre id="output"></pre>
   </div>
 
 </div>
