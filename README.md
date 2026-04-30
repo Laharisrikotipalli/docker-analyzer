@@ -251,34 +251,7 @@ docker-compose up --build
 
 ---
 
-## 🚀 Future Enhancements
-
-* LLM-based AI (OpenAI / Gemini)
-* Security vulnerability scanning
-* Kubernetes integration
-* Pull time simulation
-* Layer heatmap visualization
-
----
-
-## 💼 Resume Description
-
-> Built a full-stack Docker image optimization tool using FastAPI and a JavaScript dashboard. Implemented layer analysis, visualization, and intelligent recommendations, achieving up to 99% image size reduction using multi-stage builds and optimization techniques.
-
----
-
 ## 👨‍💻 Author
 
 **Lahari Sri**
 B.Tech CSE | DevOps & Cloud Enthusiast
-
----
-
-## 🏁 Conclusion
-
-This project demonstrates:
-
-* Strong DevOps fundamentals
-* Docker optimization expertise
-* Full-stack development skills
-* System design understanding
