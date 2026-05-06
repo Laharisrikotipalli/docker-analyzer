@@ -57,6 +57,7 @@ Docker images often become **large and inefficient** due to:
 
 ---
 
+
 ##  Solution
 
 This tool provides:
@@ -100,6 +101,7 @@ This tool provides:
 
 ---
 
+
 ###  Optimization Suggestions
 
 Rule-based suggestions based on:
@@ -122,6 +124,7 @@ Detects basic issues like:
 
 ---
 
+
 ###  Theme Support
 
 - Light / Dark mode toggle  
@@ -130,12 +133,14 @@ Detects basic issues like:
 
 ##  Optimization Results
 
+
 | Version | Size    |
 |--------|--------|
 | V1     | 365 MB |
 | V2     | ~32 MB |
 | V3     | ~4.5 MB |
 | V4     | ~2.8 MB |
+
 
 ###  Final Reduction
 
@@ -191,11 +196,36 @@ cd docker-analyzer
 
 ### 2️ Start Services
 
+
 ```bash
 docker-compose up --build
 ```
 
 ---
+
+
+### 3️ Build Sample Images (IMPORTANT)
+
+```bash
+cd apps/go-app
+
+docker build -t go-app:v1 -f Dockerfile.v1 .
+docker build -t go-app:v2 -f Dockerfile.v2 .
+docker build -t go-app:v3 -f Dockerfile.v3 .
+docker build -t go-app:v4 -f Dockerfile.v4 .
+```
+
+---
+
+##  Access
+
+- Dashboard → http://localhost:3000  
+- API Docs → http://localhost:8000/docs  
+
+---
+
+##  Usage
+
 
 ### 3️ Build Sample Images (IMPORTANT)
 
@@ -230,6 +260,7 @@ docker build -t go-app:v4 -f Dockerfile.v4 .
 
 ---
 
+
 ##  Tech Stack
 
 - Backend → FastAPI, Python Docker SDK  
@@ -237,6 +268,7 @@ docker build -t go-app:v4 -f Dockerfile.v4 .
 - DevOps → Docker, Docker Compose  
 
 ---
+
 
 ##  Optimization Techniques Used
 
@@ -256,7 +288,8 @@ docker build -t go-app:v4 -f Dockerfile.v4 .
 
 ---
 
-## 👩‍💻 Author
+##  Author
 
 **Lahari Sri**  
+
 B.Tech CSE | DevOps & Cloud Enthusiast
